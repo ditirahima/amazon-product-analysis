@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<!-- saved from url=(0064)file:///C:/Users/DITS-USER/Downloads/amazon_india_dashboard.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon India — Product Analysis Dashboard</title>
+<link href="./Amazon India — Product Analysis Dashboard_files/css2" rel="stylesheet">
+<script src="./Amazon India — Product Analysis Dashboard_files/chart.umd.js.download"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --bg2: #161b27;
+    --bg3: #1c2333;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #e8eaf0;
+    --text2: #8b93a8;
+    --text3: #555e72;
+    --accent: #4f8ef7;
+    --accent2: #38c989;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --purple: #a78bfa;
+    --coral: #fb7185;
+    --font: 'Inter', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --r: 10px;
+    --r2: 16px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 600; color: #fff;
+  }
+  .logo-text { font-size: 15px; font-weight: 600; color: var(--text); }
+  .logo-sub { font-size: 11px; color: var(--text2); margin-top: -2px; }
+  .header-meta { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+  .header-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(56,201,137,0.12);
+    color: var(--accent2);
+    border: 1px solid rgba(56,201,137,0.2);
+    border-radius: 99px;
+    padding: 3px 10px;
+    font-size: 11px; font-weight: 500;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); }
+
+  /* ── LAYOUT ── */
+  main { max-width: 1280px; margin: 0 auto; padding: 2rem 2.5rem 4rem; }
+
+  /* ── HERO ── */
+  .hero {
+    margin-bottom: 2.5rem;
+    padding: 2rem 2.5rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .hero-left h1 {
+    font-size: 28px; font-weight: 600; color: var(--text);
+    line-height: 1.25; margin-bottom: 8px;
+  }
+  .hero-left h1 span { color: var(--accent); }
+  .hero-left p { font-size: 14px; color: var(--text2); max-width: 520px; line-height: 1.6; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+  .tag {
+    font-size: 11px; padding: 3px 10px; border-radius: 99px;
+    border: 1px solid var(--border2); color: var(--text2);
+    font-family: var(--mono);
+  }
+  .hero-stat { text-align: right; }
+  .hero-stat .big { font-size: 48px; font-weight: 600; color: var(--accent); line-height: 1; font-family: var(--mono); }
+  .hero-stat .lbl { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+  /* ── SECTION HEADER ── */
+  .sec-hd {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1rem; margin-top: 2.5rem;
+  }
+  .sec-hd .eyebrow {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text3);
+  }
+  .sec-hd hr { flex: 1; border: none; border-top: 1px solid var(--border); }
+
+  /* ── KPI GRID ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 0.5rem;
+  }
+  .kpi {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 1.1rem 1.25rem;
+    transition: border-color 0.2s;
+  }
+  .kpi:hover { border-color: var(--border2); }
+  .kpi-lbl { font-size: 11px; color: var(--text3); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .kpi-val { font-size: 24px; font-weight: 600; color: var(--text); font-family: var(--mono); line-height: 1.1; }
+  .kpi-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+  .kpi-delta {
+    display: inline-block; font-size: 11px; padding: 1px 6px;
+    border-radius: 4px; margin-top: 4px; font-family: var(--mono);
+  }
+  .up { background: rgba(56,201,137,0.12); color: var(--accent2); }
+  .down { background: rgba(239,68,68,0.12); color: var(--danger); }
+
+  /* ── CHART CARDS ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-65 { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 1.5rem;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: var(--border2); }
+  .card-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .card-sub { font-size: 11px; color: var(--text3); margin-bottom: 1.25rem; }
+
+  /* ── CHART WRAPPERS ── */
+  .ch { position: relative; width: 100%; }
+  .ch-260 { height: 260px; }
+  .ch-200 { height: 200px; }
+  .ch-300 { height: 300px; }
+  .ch-180 { height: 180px; }
+
+  /* ── LEGEND ── */
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 1rem; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
+  .ldot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── TABLE ── */
+  .tbl-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; font-size: 10px; font-weight: 500;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--text3); padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.025); }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 500;
+    padding: 2px 8px; border-radius: 99px; font-family: var(--mono);
+  }
+  .b-blue { background: rgba(79,142,247,0.13); color: var(--accent); }
+  .b-green { background: rgba(56,201,137,0.13); color: var(--accent2); }
+  .b-warn { background: rgba(245,158,11,0.13); color: var(--warn); }
+  .b-red { background: rgba(239,68,68,0.13); color: var(--danger); }
+  .b-purple { background: rgba(167,139,250,0.13); color: var(--purple); }
+
+  /* ── INSIGHTS STRIP ── */
+  .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .insight {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 1rem 1.25rem;
+    border-left: 3px solid transparent;
+  }
+  .insight.blue { border-left-color: var(--accent); }
+  .insight.green { border-left-color: var(--accent2); }
+  .insight.warn { border-left-color: var(--warn); }
+  .insight.red { border-left-color: var(--danger); }
+  .insight.purple { border-left-color: var(--purple); }
+  .insight-title { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .insight-body { font-size: 12px; color: var(--text2); line-height: 1.55; }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 4rem; padding: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px; color: var(--text3); font-family: var(--mono);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .grid2, .grid3, .grid-65 { grid-template-columns: 1fr; }
+    header { padding: 0 1rem; }
+    main { padding: 1.5rem 1rem 3rem; }
+    .hero { flex-direction: column; }
+    .hero-stat { text-align: left; }
+    .hero-stat .big { font-size: 36px; }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">A</div>
+    <div>
+      <div class="logo-text">Amazon India · Product Analysis</div>
+      <div class="logo-sub">E-commerce Data Intelligence Report</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span class="header-meta">1,465 products · 16 fields · Amazon.in</span>
+    <span class="header-badge"><span class="dot"></span>Analysis Complete</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <h1>Amazon India<br><span>Product &amp; Review Intelligence</span></h1>
+      <p>A comprehensive analysis of 1,465 product listings across Electronics, Computers &amp; Accessories, and Home &amp; Kitchen categories — examining pricing strategies, discount depth, customer ratings, and market positioning signals.</p>
+      <div class="hero-tags">
+        <span class="tag">Python · Pandas</span>
+        <span class="tag">1,465 rows × 16 cols</span>
+        <span class="tag">3 main categories</span>
+        <span class="tag">Amazon.in</span>
+        <span class="tag">99.9% data quality</span>
+      </div>
+    </div>
+    <div class="hero-stat">
+      <div class="big">47.7%</div>
+      <div class="lbl">Average discount<br>across all products</div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="sec-hd"><span class="eyebrow">Key metrics</span><hr></div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-lbl">Total listings</div>
+      <div class="kpi-val">1,465</div>
+      <div class="kpi-sub">1,351 unique product IDs</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Avg actual price</div>
+      <div class="kpi-val">₹5,445</div>
+      <div class="kpi-sub">Median ₹1,650</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Avg sale price</div>
+      <div class="kpi-val">₹3,125</div>
+      <div class="kpi-sub">Median ₹799</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Avg discount</div>
+      <div class="kpi-val">47.7%</div>
+      <div class="kpi-sub">Median exactly 50%</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Avg rating</div>
+      <div class="kpi-val">4.09</div>
+      <div class="kpi-sub">88% rated ≥ 3.8★</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Avg reviews / product</div>
+      <div class="kpi-val">18.3K</div>
+      <div class="kpi-sub">Median 5,179</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Avg savings</div>
+      <div class="kpi-val">₹2,320</div>
+      <div class="kpi-sub">Per product vs MRP</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-lbl">Risk listings</div>
+      <div class="kpi-val" style="color:var(--danger)">12</div>
+      <div class="kpi-sub">High disc + low rating</div>
+    </div>
+  </div>
+
+  <!-- CATEGORY + PRICE RANGE -->
+  <div class="sec-hd"><span class="eyebrow">Category &amp; pricing</span><hr></div>
+  <div class="grid-65" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-title">Product distribution by category</div>
+      <div class="card-sub">Electronics leads volume; Home &amp; Kitchen is a strong second</div>
+      <div class="legend">
+        <div class="legend-item"><span class="ldot" style="background:#4f8ef7"></span>Electronics (526)</div>
+        <div class="legend-item"><span class="ldot" style="background:#38c989"></span>Computers &amp; Acc. (453)</div>
+        <div class="legend-item"><span class="ldot" style="background:#fb7185"></span>Home &amp; Kitchen (448)</div>
+        <div class="legend-item"><span class="ldot" style="background:#a78bfa"></span>Office Products (31)</div>
+        <div class="legend-item"><span class="ldot" style="background:#555e72"></span>Other (7)</div>
+      </div>
+      <div class="ch ch-260"><canvas id="catChart" role="img" aria-label="Horizontal bar chart of product count by category" width="1030" height="390" style="display: block; box-sizing: border-box; height: 260px; width: 687px;"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Products by price range (sale price)</div>
+      <div class="card-sub">Over 55% of catalog is priced under ₹1,000</div>
+      <div class="ch ch-260"><canvas id="priceChart" role="img" aria-label="Bar chart of products by discounted price range" width="576" height="390" style="display: block; box-sizing: border-box; height: 260px; width: 384px;"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY PERFORMANCE TABLE -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">Category performance matrix</div>
+    <div class="card-sub">Average pricing, discount depth, ratings, and engagement by category</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th><th>Products</th><th>Avg MRP</th><th>Avg Sale</th>
+            <th>Avg Discount</th><th>Avg Rating</th><th>Avg Reviews</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge b-blue">Electronics</span></td>
+            <td>526</td><td>₹10,127</td><td>₹5,966</td>
+            <td><span class="badge b-warn">50.8%</span></td>
+            <td>⭐ 4.08</td><td>29,998</td>
+          </tr>
+          <tr>
+            <td><span class="badge b-green">Computers &amp; Acc.</span></td>
+            <td>453</td><td>₹1,684</td><td>₹843</td>
+            <td><span class="badge b-warn">54.0%</span></td>
+            <td>⭐ 4.15</td><td>17,137</td>
+          </tr>
+          <tr>
+            <td><span class="badge b-purple">Home &amp; Kitchen</span></td>
+            <td>448</td><td>₹4,162</td><td>₹2,331</td>
+            <td><span class="badge b-green">40.1%</span></td>
+            <td>⭐ 4.04</td><td>6,676</td>
+          </tr>
+          <tr>
+            <td><span class="badge b-blue" style="background:rgba(167,139,250,0.1);color:var(--purple)">Office Products</span></td>
+            <td>31</td><td>₹397</td><td>₹302</td>
+            <td><span class="badge b-green">12.4%</span></td>
+            <td>⭐ 4.31</td><td>4,828</td>
+          </tr>
+          <tr>
+            <td><span class="badge" style="background:rgba(255,255,255,0.05);color:var(--text2)">Others</span></td>
+            <td>7</td><td>₹1,182</td><td>₹617</td>
+            <td><span class="badge b-warn">40.8%</span></td>
+            <td>⭐ 4.05</td><td>13,900</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DISCOUNT + RATING -->
+  <div class="sec-hd"><span class="eyebrow">Discount &amp; rating analysis</span><hr></div>
+  <div class="grid2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-title">Discount depth distribution</div>
+      <div class="card-sub">47% of products carry more than 50% discount</div>
+      <div class="ch ch-200"><canvas id="discChart" role="img" aria-label="Bar chart of products grouped by discount percentage range" width="803" height="300" style="display: block; box-sizing: border-box; height: 200px; width: 535px;"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Rating distribution</div>
+      <div class="card-sub">Majority of products cluster at 4.0–4.3 stars</div>
+      <div class="ch ch-200"><canvas id="ratingChart" role="img" aria-label="Line chart showing distribution of ratings from 2 to 5 stars" width="803" height="300" style="display: block; box-sizing: border-box; height: 200px; width: 535px;"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TOP PRODUCTS TABLE -->
+  <div class="sec-hd"><span class="eyebrow">Top performers</span><hr></div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">Top 10 most-reviewed products</div>
+    <div class="card-sub">Dominated by Amazon's own HDMI cables and boAt audio products — all under ₹1,000</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Product</th><th>Sale Price</th><th>Rating</th><th>Reviews</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">01</td><td>AmazonBasics Flexible Premium HDMI Cable 4K@60Hz</td><td>₹219</td><td><span class="badge b-green">4.4★</span></td><td style="font-family:var(--mono)">4,26,973</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">02</td><td>Amazon Basics High-Speed HDMI Cable, 6 Feet</td><td>₹309</td><td><span class="badge b-green">4.4★</span></td><td style="font-family:var(--mono)">4,26,973</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">03</td><td>Amazon Basics High-Speed HDMI Cable 6 Feet (2-Pack)</td><td>₹309</td><td><span class="badge b-green">4.4★</span></td><td style="font-family:var(--mono)">4,26,972</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">04</td><td>boAt Bassheads 100 In-Ear Wired Earphones — Taffy Pink</td><td>₹349</td><td><span class="badge b-blue">4.1★</span></td><td style="font-family:var(--mono)">3,63,713</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">05</td><td>boAt Bassheads 100 In-Ear Wired Earphones — Furious Red</td><td>₹379</td><td><span class="badge b-blue">4.1★</span></td><td style="font-family:var(--mono)">3,63,713</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">06</td><td>boAt BassHeads 100 In-Ear Wired Headphones — Black</td><td>₹365</td><td><span class="badge b-blue">4.1★</span></td><td style="font-family:var(--mono)">3,63,711</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">07</td><td>Redmi 9 Activ (Carbon Black, 4GB RAM, 64GB)</td><td>₹8,499</td><td><span class="badge b-blue">4.1★</span></td><td style="font-family:var(--mono)">3,13,836</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">08</td><td>Redmi 9A Sport (Coral Green, 2GB RAM, 32GB)</td><td>₹6,499</td><td><span class="badge b-blue">4.1★</span></td><td style="font-family:var(--mono)">3,13,836</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">09</td><td>Redmi 9A Sport (Carbon Black, 2GB RAM, 32GB)</td><td>₹6,499</td><td><span class="badge b-blue">4.1★</span></td><td style="font-family:var(--mono)">3,13,832</td></tr>
+          <tr><td style="color:var(--text3);font-family:var(--mono)">10</td><td>TP-Link N150 USB WiFi Adapter (TL-WN725N)</td><td>₹499</td><td><span class="badge b-green">4.2★</span></td><td style="font-family:var(--mono)">1,79,691</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RISK TABLE -->
+  <div class="sec-hd"><span class="eyebrow">Quality risk signals</span><hr></div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-title">High discount (&gt;70%) + low rating (&lt;3.5★) — listing quality concern</div>
+    <div class="card-sub">12 products flagged — likely MRP inflation masking poor quality. Recommend listing audit.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th>Product</th><th>Discount</th><th>Rating</th><th>Reviews</th><th>Risk</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="font-size:12px">Amazon Brand Solimo 65W Fast Charging Braided Type C</td><td><span class="badge b-warn">80%</span></td><td style="color:var(--danger);font-family:var(--mono)">3.0</td><td>—</td><td><span class="badge b-red">High</span></td></tr>
+          <tr><td style="font-size:12px">SHREENOVA ID116 Plus Fitness Smart Watch</td><td><span class="badge b-warn">86%</span></td><td style="color:var(--danger);font-family:var(--mono)">2.8</td><td>87</td><td><span class="badge b-red">High</span></td></tr>
+          <tr><td style="font-size:12px">MR. BRAND Portable USB Juicer Electric</td><td><span class="badge b-warn">77%</span></td><td style="color:var(--danger);font-family:var(--mono)">2.8</td><td>109</td><td><span class="badge b-red">High</span></td></tr>
+          <tr><td style="font-size:12px">IONIX Tap Filter Multilayer Activated Carbon Faucet</td><td><span class="badge b-warn">72%</span></td><td style="color:var(--danger);font-family:var(--mono)">2.9</td><td>159</td><td><span class="badge b-red">High</span></td></tr>
+          <tr><td style="font-size:12px">Tokdis MX-1 Pro Bluetooth Calling Smartwatch</td><td><span class="badge b-warn">74%</span></td><td style="color:var(--warn);font-family:var(--mono)">3.0</td><td>681</td><td><span class="badge b-warn">Medium</span></td></tr>
+          <tr><td style="font-size:12px">PTron Force X10 Bluetooth Calling Smartwatch</td><td><span class="badge b-warn">78%</span></td><td style="color:var(--warn);font-family:var(--mono)">3.3</td><td>4,415</td><td><span class="badge b-warn">Medium</span></td></tr>
+          <tr><td style="font-size:12px">LS LAPSTER Silicone 15.6" Keyboard Cover</td><td><span class="badge b-warn">88%</span></td><td style="color:var(--warn);font-family:var(--mono)">3.3</td><td>5,692</td><td><span class="badge b-warn">Medium</span></td></tr>
+          <tr><td style="font-size:12px">ROYAL STEP Portable Electric USB Juicer</td><td><span class="badge b-warn">77%</span></td><td style="color:var(--warn);font-family:var(--mono)">3.1</td><td>3,527</td><td><span class="badge b-warn">Medium</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="sec-hd"><span class="eyebrow">Analyst insights</span><hr></div>
+  <div class="insight-grid">
+    <div class="insight blue">
+      <div class="insight-title">Deep discounting is structural, not promotional</div>
+      <div class="insight-body">Median discount is exactly 50% — this is not seasonal. 95% of products carry 10%+ discounts, strongly suggesting systematic MRP inflation across the catalog.</div>
+    </div>
+    <div class="insight green">
+      <div class="insight-title">Customer sentiment is broadly positive</div>
+      <div class="insight-body">88% of products rate ≥ 3.8★. The rating curve peaks at 4.1–4.3, indicating a consistently satisfied customer base across categories.</div>
+    </div>
+    <div class="insight warn">
+      <div class="insight-title">Higher discounts weakly predict lower ratings</div>
+      <div class="insight-body">Correlation of –0.155 between discount % and rating. Aggressive pricing may signal lower quality. Office Products — lowest discount (12.4%) — has the highest avg rating (4.31★).</div>
+    </div>
+    <div class="insight purple">
+      <div class="insight-title">Electronics drives value; budget is the volume segment</div>
+      <div class="insight-body">Electronics avg MRP is ₹10,127 — 6× higher than Computers &amp; Accessories. Yet 39% of all products are priced below ₹500 after discount — the budget segment rules by count.</div>
+    </div>
+    <div class="insight red">
+      <div class="insight-title">12 high-risk listings need audit</div>
+      <div class="insight-body">Products combining 70%+ discounts with sub-3.5★ ratings are likely misleading buyers. Smartwatches and USB accessories are the most common offenders.</div>
+    </div>
+    <div class="insight green">
+      <div class="insight-title">Amazon's own brands dominate review volume</div>
+      <div class="insight-body">AmazonBasics HDMI cables top the chart with 4,26,973 reviews at just ₹219–₹309. Private label at budget prices is the engagement winner on the platform.</div>
+    </div>
+    <div class="insight blue">
+      <div class="insight-title">Review count distribution is heavily skewed</div>
+      <div class="insight-body">Mean reviews = 18,296 but median = 5,179 — a small number of viral products pull the average up. The top 10 products alone account for over 30 lakh reviews.</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>Amazon India · Product Analysis Dashboard · Built with Python, Pandas &amp; Chart.js</span>
+  <span>Data: 1,465 rows · amazon.csv · Analysis by Senior Data Analyst</span>
+</footer>
+
+<script>
+const TC = '#8b93a8';
+const GC = 'rgba(255,255,255,0.06)';
+const base = {
+  responsive: true, maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false,
+    backgroundColor: '#1c2333', titleColor: '#e8eaf0', bodyColor: '#8b93a8',
+    borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1, padding: 10
+  }},
+  scales: {
+    x: { ticks: { color: TC, font: { size: 11 } }, grid: { color: GC } },
+    y: { ticks: { color: TC, font: { size: 11 } }, grid: { color: GC } }
+  }
+};
+
+// Category horizontal bar
+new Chart(document.getElementById('catChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Electronics','Computers & Acc.','Home & Kitchen','Office Products','Other'],
+    datasets: [{
+      data: [526, 453, 448, 31, 7],
+      backgroundColor: ['#4f8ef7','#38c989','#fb7185','#a78bfa','#555e72'],
+      borderRadius: 6, borderSkipped: false
+    }]
+  },
+  options: { ...base, indexAxis: 'y',
+    scales: {
+      x: { ticks: { color: TC, font: { size: 11 } }, grid: { color: GC } },
+      y: { ticks: { color: TC, font: { size: 11 } }, grid: { color: 'transparent' } }
+    }
+  }
+});
+
+// Price range bar
+new Chart(document.getElementById('priceChart'), {
+  type: 'bar',
+  data: {
+    labels: ['<₹500','₹500–1K','₹1K–5K','₹5K–10K','₹10K–20K','₹20K+'],
+    datasets: [{
+      data: [576, 252, 431, 84, 71, 51],
+      backgroundColor: ['#4f8ef7','#4f8ef7','#38c989','#a78bfa','#f59e0b','#ef4444'],
+      borderRadius: 6, borderSkipped: false
+    }]
+  },
+  options: { ...base,
+    scales: {
+      x: { ticks: { color: TC, font: { size: 10 }, maxRotation: 35 }, grid: { color: 'transparent' } },
+      y: { ticks: { color: TC, font: { size: 11 } }, grid: { color: GC } }
+    }
+  }
+});
+
+// Discount distribution
+new Chart(document.getElementById('discChart'), {
+  type: 'bar',
+  data: {
+    labels: ['0–10%','11–25%','26–50%','51–70%','71–100%'],
+    datasets: [{
+      data: [35, 173, 513, 476, 219],
+      backgroundColor: ['#38c989','#38c989','#f59e0b','#f59e0b','#ef4444'],
+      borderRadius: 6, borderSkipped: false
+    }]
+  },
+  options: { ...base,
+    scales: {
+      x: { ticks: { color: TC, font: { size: 11 } }, grid: { color: 'transparent' } },
+      y: { ticks: { color: TC, font: { size: 11 } }, grid: { color: GC } }
+    }
+  }
+});
+
+// Rating distribution
+new Chart(document.getElementById('ratingChart'), {
+  type: 'line',
+  data: {
+    labels: ['2.0','2.3','2.6','2.8','2.9','3.0','3.1','3.2','3.3','3.4','3.5','3.6','3.7','3.8','3.9','4.0','4.1','4.2','4.3','4.4','4.5','4.6','4.7','4.8','5.0'],
+    datasets: [{
+      data: [1,1,1,2,1,4,4,2,16,10,26,35,42,86,123,181,244,228,230,123,75,17,6,3,3],
+      borderColor: '#4f8ef7',
+      backgroundColor: 'rgba(79,142,247,0.1)',
+      fill: true, tension: 0.4,
+      pointRadius: 2, pointBackgroundColor: '#4f8ef7',
+      borderWidth: 2
+    }]
+  },
+  options: { ...base,
+    scales: {
+      x: { ticks: { color: TC, font: { size: 9 }, maxRotation: 45, autoSkip: true, maxTicksLimit: 12 }, grid: { color: 'transparent' } },
+      y: { ticks: { color: TC, font: { size: 11 } }, grid: { color: GC } }
+    }
+  }
+});
+</script>
+
+
+</body></html>
